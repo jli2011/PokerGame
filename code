@@ -1,0 +1,631 @@
+   import java.util.*;
+
+   public class JiajieA16
+   {
+      public static void main(String[] args)
+      {
+         System.out.println("--VIDEO POKER--");
+         System.out.println("You have bet 1 token.");
+         System.out.println("This game follows standard 5-card draw poker rules.");
+         System.out.println("Make the best poker hand to earn the highest payout!");
+         System.out.print("Your current hand: ");
+      
+      //Initialize variables
+         Deck card; 
+         int counter = 0;
+         int countertwo = 0;
+         int i = 0;
+         int input = -1;
+         int inputTwo = -10;
+			int inputThree = -20;
+         int secondInput = 0;
+			ArrayList array = new ArrayList(0);
+			PlayingCard discardOne = new PlayingCard(0,0);
+			PlayingCard discardTwo = new PlayingCard(0,0);
+			PlayingCard discardThree = new PlayingCard(0,0);
+			int payout = 0;
+         String printOut;
+         PokerHand hand;
+         Scanner keybd = new Scanner(System.in);
+      //print out 5 cards 
+         card = new Deck();
+         hand = new PokerHand(card.draw(), card.draw(), card.draw(), card.draw(), card.draw());
+         hand.sort();  
+         printOut = hand.toString(); 
+         System.out.print (printOut + " "); 
+      //print out computer message (Done)
+         System.out.println ("");
+         System.out.println (" 1 2 3 4 5");
+         System.out.println ("You may discard up to 3 cards to draw the same number of new cards.");
+      //user input 
+         do
+         {
+            try
+            {
+               System.out.print ("Enter the index of a card you wish to discard (or 0 to stop): ");
+               input = keybd.nextInt();
+               if (input == inputTwo)
+               {
+                  System.out.println("You already selected that card to discard.");
+                  System.out.println("Please choose a different card or enter 0 to stop discarding.");
+               }
+               else if (input == 0)
+               {
+                  System.out.println("You discard no cards.");
+                  break;
+               }
+               else if ((input < 1) || (input > 5) && (input != 0))
+               {
+                  System.out.println("You must enter an integer between 0 and 5. Please try again. ");
+               }
+               else if ((input > 0) && (input < 6))
+               {
+						if (i == 0)
+						{
+						discardOne = hand.hand[input-1];
+						}
+						else if (i == 1)
+						{
+						discardTwo = hand.hand[input-1];
+						}
+						else if (i == 2)
+						{
+						discardThree = hand.hand[input-1];
+						}
+                  hand.hand[input-1] = card.draw();
+                  i++;
+                  inputTwo = input;
+               }
+
+            }
+               catch (InputMismatchException ime)
+               {  
+                  System.out.println("You must enter an integer between 0 and 5. Please try again.");
+                  keybd.nextLine();
+               }
+         }
+         while (i < 3);
+         hand.sort(); 
+		if (!(input == 0))
+		{
+      //Discarded Cards
+         System.out.print("You discard: ");
+         System.out.print(discardOne + " ");
+			System.out.print(discardTwo + " ");
+			System.out.println(discardThree + " ");
+	   }
+      //Prints final hand (Done)
+         System.out.print("Your final hand: ");
+         printOut = hand.toString();
+         System.out.println(printOut + " ");
+      //Prints out the hand type
+         if (hand.isRoyalFlush() == true)
+         {
+            System.out.println("You have a royal flush.");
+				payout = 250;
+         }
+         else if (hand.isStraightFlush() == true)
+         {
+            System.out.println("You have a straight flush.");
+				payout = 50;
+         }
+         else if (hand.isFourOfAKind() == true)
+         {
+            System.out.println("You have a four of a kind.");
+				payout = 25;
+         }
+         else if (hand.isFullHouse() == true)
+         {
+            System.out.println("You have a full house.");
+				payout = 9;
+         }
+         else if (hand.isFlush() == true)
+         {
+            System.out.println("You have a flush.");
+				payout = 6;
+         }
+         else if (hand.isStraight() == true)
+         {
+            System.out.println("You have a straight.");
+				payout = 4;
+         }
+         else if (hand.isThreeOfAKind() == true)
+         {
+            System.out.println("You have three of a kind.");
+				payout = 3;
+         }
+         else if (hand.isTwoPair() == true)
+         {
+            System.out.println("You have two pairs.");
+				payout = 2;
+         }
+         else if (hand.isPair() == true)
+         {
+            System.out.println("You have a pair.");
+				payout = 1;
+         }
+			else 
+			{
+			payout = 0;
+			}
+      //Print payout
+		   if (payout == 1)
+			{
+         System.out.print("You win " + payout + " token.");
+			}
+			else if (payout == 0)
+			{
+			System.out.println("You have only a high card. You lose.");
+			}
+			else
+			{
+			System.out.print("You win " + payout + " tokens.");
+			}
+      }
+   }
+	
+	
+	
+	
+	
+class PokerHand
+   {
+      private PlayingCard one, two, three, four, five;
+      public PlayingCard[] hand;
+   //CONSTRUCTOR (DONE)
+      public PokerHand (PlayingCard one, PlayingCard two, PlayingCard three, PlayingCard four, PlayingCard five)
+      {
+         this.one = one;
+         this.two = two;
+         this.three = three;
+         this.four = four; 
+         this.five = five;
+         hand = new PlayingCard[5];
+         hand[0] = one;
+         hand[1] = two;
+         hand[2] = three;
+         hand[3] = four;
+         hand[4] = five;
+      }
+   //SORTER (DONE)
+      public void sort()
+      {
+         int counter = 0;
+         do
+         {
+            for (int i = 0; i < 4; i++)
+            {
+               int b = i+1;
+               if (hand[i].compareTo(hand[b]) == 1)
+               {
+                  PlayingCard temp = hand[i];
+                  hand[i] = hand[b];
+                  hand[b] = temp;
+               }
+            }
+            counter++;
+         }
+         while (counter < 5);
+      }
+   //PAIR (DONE)
+      public boolean isPair()
+      {
+         for (int i = 0; i < 4; i++)
+         {
+            for (int b = i+1; b < 5; b++)
+            {
+               if (hand[i].getValue() == hand[b].getValue())
+               {
+                  return true;
+               }
+            }
+         }
+         return false;
+      }
+   //TWO PAIR (DONE)
+      public boolean isTwoPair()
+      {
+         this.sort();
+         if (((hand[0].getValue() == hand[1].getValue()) && (hand[2].getValue() == hand[3].getValue()))
+         || ((hand[1].getValue() == hand[2].getValue()) && (hand[3].getValue() == hand[4].getValue()))
+         || ((hand[0].getValue() == hand[1].getValue()) && (hand[3].getValue() == hand[4].getValue())))
+         {
+            return true;
+         }
+         return false;
+      }
+   //THREE OF A KIND (DONE)
+      public boolean isThreeOfAKind()
+      {
+         if ((hand[0].getValue() == hand[1].getValue()) && (hand[1].getValue() == hand[2].getValue()))
+         {
+            return true;
+         }
+         else if ((hand[2].getValue() == hand[3].getValue()) && (hand[3].getValue() == hand[4].getValue()))
+         {
+            return true;
+         }
+         else if ((hand[1].getValue() == hand[2].getValue()) && (hand[2].getValue() == hand[3].getValue()))
+         {
+            return true;
+         }
+         return false;
+      }
+   //STRAIGHT (DONE)
+      public boolean isStraight()
+      {
+         this.sort();
+         if (((hand[1].getValue() == hand[0].getValue() + 1)
+         && (hand[2].getValue() == hand[1].getValue() + 1)
+         && (hand[3].getValue() == hand[2].getValue() + 1))
+         && 
+           ((hand[4].getValue() == hand[3].getValue() + 1) || (hand[4].getValue() == 1))
+         &&
+           ((hand[0].getSuit() == hand[1].getSuit())
+         || (hand[0].getSuit() == hand[2].getSuit())
+         || (hand[0].getSuit() == hand[3].getSuit())
+         || (hand[0].getSuit() == hand[4].getSuit())
+         || (hand[1].getSuit() == hand[2].getSuit())
+         || (hand[1].getSuit() == hand[3].getSuit())
+         || (hand[1].getSuit() == hand[4].getSuit())
+         || (hand[2].getSuit() == hand[3].getSuit())
+         || (hand[2].getSuit() == hand[4].getSuit())
+         || (hand[3].getSuit() == hand[4].getSuit())))
+         {
+            return true;
+         }
+         return false;
+      }
+   //FLUSH (DONE)
+      public boolean isFlush()
+      {
+         if ((hand[0].getSuit() == hand[1].getSuit()) && (hand[1].getSuit() == hand[2].getSuit()) && (hand[2].getSuit() == hand[3].getSuit()) && (hand[3].getSuit() == hand[4].getSuit()))
+         {
+            return true;
+         }
+         return false;
+      }
+   //FULL HOUSE (DONE)
+      public boolean isFullHouse()
+      {
+         if ((hand[0].getValue() == hand[1].getValue()) && ((hand[2].getValue() == hand[3].getValue()) && (hand[3].getValue() == hand[4].getValue())))
+         {
+            return true;
+         }
+         else if (((hand[0].getValue() == hand[1].getValue()) && (hand[1].getValue() == hand[2].getValue())) && (hand[3].getValue() == hand[4].getValue()))
+         {
+            return true;
+         }
+         return false;
+      }
+   //FOUR OF A KIND (DONE)
+      public boolean isFourOfAKind()
+      {
+         if ((hand[0].getValue() == hand[1].getValue()) && (hand[0].getValue() == hand[2].getValue()) && (hand[0].getValue() == hand[3].getValue()))
+         {
+            return true;
+         }
+         else if ((hand[1].getValue() == hand[2].getValue()) && (hand[2].getValue() == hand[3].getValue()) && (hand[3].getValue() == hand[4].getValue()))
+         {
+            return true;
+         }
+         return false;
+      }
+   //STRAIGHT FLUSH 
+      public boolean isStraightFlush()
+      {
+         if (((hand[0].getSuit() == hand[1].getSuit())
+         && (hand[1].getSuit() == hand[2].getSuit())
+         && (hand[2].getSuit() == hand[3].getSuit())
+         && (hand[3].getSuit() == hand[4].getSuit()))  && 
+         ((hand[4].getValue() == hand[0].getValue() + 4) 
+         && (hand[1].getValue() == hand[0].getValue()+1)
+         && (hand[2].getValue() == hand[1].getValue()+1)
+         && (hand[3].getValue()== hand[2].getValue()+1)
+         && (hand[4].getValue() == hand[3].getValue()+1)))
+         {
+            return true;
+         }
+         return false;
+      }
+   //ROYAL FLUSH (WORKS)
+      public boolean isRoyalFlush()
+      {
+         if ((hand[0].getValue() == 10) && (hand[4].getValue() == 1) && (hand[0].getSuit() == hand[1].getSuit()) && (hand[1].getSuit() == hand[2].getSuit()) && (hand[2].getSuit() == hand[3].getSuit()) && (hand[3].getSuit() == hand[4].getSuit()))
+         {
+            return true;
+         }
+         return false;
+      }
+   //toString(works)
+      public String toString()
+      {
+         String fiveCards;
+         fiveCards = hand[0].toString() + " " + hand[1].toString() + " " + hand[2].toString() + " " + hand[3].toString() + " " + hand[4].toString();
+         return fiveCards;
+      }
+   }
+	
+	
+	
+	
+	
+class PlayingCard implements Comparable<PlayingCard>
+   {
+      private int value, suit, pcValue;
+      public static final int JOKER = 0;
+      public static final int CLUBS = 1;
+      public static final int SPADES = 2;
+      public static final int HEARTS = 3;
+      public static final int DIAMONDS = 4; 
+   /**
+   * Constructs a new card with the given face value and suit.
+   *
+   * The given card value must be between 1 (Ace) and 13 (King).
+   * The suit must be one of the CLUBS, SPADES, HEARTS, or DIAMONDS constant values.
+   * If either the value or the suit is out of range, both will be set to JOKER.
+   */
+      public PlayingCard(int value, int suit)
+      {
+         this.value = value;
+         this.suit = suit;
+         if ((value > 13) || (value < 1))
+         {
+            this.value = 0;
+            this.suit = 0;
+         }
+         if ((suit < 1) || (suit > 4))
+         {
+            this.value = 0;
+            this.suit = 0;
+         }
+      }
+   /**
+   * Returns the face value of this card: a value between 1 and 13, inclusive,
+   * or else JOKER.
+   */
+      public int getValue()
+      {
+         int number = this.value;
+         int returnValue;
+         if ((number > 13) || (number < 1))
+         {
+            returnValue = 0;
+         }
+         else 
+         {
+            returnValue = number; 
+         }
+         return returnValue;
+      }
+   /**
+   * Returns the suit of this card.
+   */
+      public int getSuit()
+      {
+         int symbol = this.suit;
+         int returnValue;
+         if ((symbol > 4) || (symbol < 1))
+         {
+            returnValue = 0;
+         }
+         else
+         {
+            returnValue = symbol;
+         }
+         return returnValue;
+      }
+   /**
+   * Returns a String of this card of the form "4 of Diamonds",
+   * where "4" here is the value, and "Diamonds" is the suit.
+   * Aces and face card (Jack, Queen, King) names are spelled out.
+   *
+   * If a card's suit or value is not in the normal range (that is,
+   * if either of them contain the value JOKER), the String "Joker"
+   * is returned instead.
+   */
+      public String toString()
+      {
+         int value = getValue();
+         int suit = getSuit();
+         String printValue = "";
+         String printSuit = "";
+         String output;
+         if ((value > 13) || (value < 1))
+         {
+            printValue = "Joker";
+         }
+         else if (value == 1)
+         {
+            printValue = "A";
+         }
+         else if (value == 2)
+         {
+            printValue = "2";
+         }
+         else if (value == 3)
+         {
+            printValue = "3";
+         }
+         else if (value == 4)
+         {
+            printValue = "4";
+         }
+         else if (value == 5)
+         {
+            printValue = "5";
+         }
+         else if (value == 6)
+         {
+            printValue = "6";
+         }
+         else if (value == 7)
+         {
+            printValue = "7";
+         }
+         else if (value == 8)
+         {
+            printValue = "8";
+         }
+         else if (value == 9)
+         {
+            printValue = "9";
+         }
+         else if (value == 10)
+         {
+            printValue = "10";
+         }
+         else if (value == 11)
+         {
+            printValue = "J";
+         }
+         else if (value == 12)
+         {
+            printValue = "Q";
+         }
+         else if (value == 13)
+         {
+            printValue = "K";
+         }
+         if (suit == 1)
+         {
+            printSuit = "C";
+         }
+         else if (suit == 2)
+         {
+            printSuit = "S";
+         }
+         else if (suit == 3)
+         {
+            printSuit = "H";
+         }
+         else if (suit == 4)
+         {
+            printSuit = "D";
+         }
+      	
+         if ((value > 13) || (value < 1))
+         {
+            output = "Joker";
+         }
+         else if ((suit < 1) || (suit > 4))
+         {
+            output = "Joker";
+         }
+         else
+         {
+            output = printValue + printSuit;
+         }
+         return output;
+      }
+   	
+      public int compareTo(PlayingCard pc)
+      {
+         if ((pc.value == 1) && (this.value != 1))
+         {
+            return -1;
+         }
+         else if ((this.value == 1) && (pc.value != 1))
+         {
+            return 1;
+         }
+         else if (this.value < pc.value)
+         {
+            return -1;
+         }
+         else if (this.value > pc.value)
+         {
+            return 1;
+         }
+         else
+         {
+            return 0;
+         }
+      }
+   }
+	
+	
+	
+	
+	
+class Deck
+   {
+      private PlayingCard[] cards;
+      private int deckSize = 52; 
+   /**
+   * Constructs a new deck of 52 standard playing cards with no jokers.
+   * If the parameter shuffled == true, the new deck will be shuffled.
+   * Otherwise, it will be in sorted order.
+   */
+      public Deck(boolean shuffled)
+      {
+         this.cards = new PlayingCard[52];
+         for (int i=0; i < 13; i++) 
+         {
+           // Create the Hearts
+            cards[i] = new PlayingCard(i, PlayingCard.HEARTS);
+           // Create the Spades
+            cards[i+13] = new PlayingCard(i+1, PlayingCard.SPADES);
+           // Create the Diamonds
+            cards[i+26] = new PlayingCard(i+1, PlayingCard.DIAMONDS);
+           // Create the Clubs
+            cards[i+39] = new PlayingCard(i+1, PlayingCard.CLUBS);
+         }
+         if (shuffled == true)
+         {
+            shuffle();
+         }
+         
+      }
+   /**
+   * Constructs a deck of 52 shuffled playing cards.
+   */
+      public Deck()
+      {
+         this(true);
+      }
+   /**
+   * Removes the top card from this deck and returns it.
+   * If this deck is empty, will return null instead.
+   */
+      public PlayingCard draw()
+      {
+         this.shuffle();      
+         PlayingCard returnValue;
+         if (deckSize == 0)
+         {
+            returnValue = null;
+         }      
+         else 
+         {
+            deckSize--;
+            returnValue = cards[deckSize];
+         }
+         return returnValue;
+      }
+   /**
+   * Returns the number of cards currently remaining in this deck.
+   */
+      public int getSize()
+      {
+         return deckSize;
+      }
+   
+   /**
+   * Shuffles the cards remaining in this deck.  That is, only
+   * reorders those cards that have not yet been drawn.  The deck's
+   * current size does not change and any previously drawn cards 
+   * are NOT returned to the deck.
+   */
+      public void shuffle()
+      {
+         for (int i = getSize()-1; (i < cards.length) && (i > 0); i--) 
+         {
+            int randomCard = (int) (Math.random() * (i));
+         //swap current value with selected value
+            PlayingCard temp = cards[i];
+            cards[i] = cards[randomCard];
+            cards[randomCard] = temp;
+         }
+      }
+   }
